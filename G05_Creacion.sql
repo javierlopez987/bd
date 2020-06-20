@@ -8,7 +8,7 @@ SET search_path = unc_249695;
 CREATE TABLE GR05_CATEGORIA (
     id_categoria int  NOT NULL,
     nombre_categoria varchar(150)  NOT NULL,
-    CONSTRAINT PK_CATEGORIA PRIMARY KEY (id_categoria)
+    CONSTRAINT PK_GR05_CATEGORIA PRIMARY KEY (id_categoria)
 );
 
 -- Table: DISTRITO
@@ -17,7 +17,7 @@ CREATE TABLE GR05_DISTRITO (
     nombre_pais varchar(120)  NOT NULL,
     nombre_provincia varchar(120)  NOT NULL,
     nombre_distrito varchar(120)  NOT NULL,
-    CONSTRAINT PK_DISTRITO PRIMARY KEY (id_distrito)
+    CONSTRAINT PK_GR05_DISTRITO PRIMARY KEY (id_distrito)
 );
 
 -- Table: EVENTO
@@ -32,7 +32,7 @@ CREATE TABLE GR05_EVENTO (
     dia_evento int  NOT NULL,
     mes_evento int  NOT NULL,
     repetir boolean  NOT NULL,
-    CONSTRAINT PK_EVENTO PRIMARY KEY (id_evento)
+    CONSTRAINT PK_GR05_EVENTO PRIMARY KEY (id_evento)
 );
 
 -- Table: EVENTO_EDICION
@@ -43,13 +43,13 @@ CREATE TABLE GR05_EVENTO_EDICION (
     fecha_fin_pub date  NULL,
     presupuesto numeric(8,2)  NOT NULL,
     fecha_edicion date  NULL,
-    CONSTRAINT PK_EVENTO_EDICION PRIMARY KEY (id_evento,nro_edicion)
+    CONSTRAINT PK_GR05_EVENTO_EDICION PRIMARY KEY (id_evento,nro_edicion)
 );
 
 -- Table: PAIS
 CREATE TABLE GR05_PAIS (
     nombre_pais varchar(120)  NOT NULL,
-    CONSTRAINT PK_PAIS PRIMARY KEY (nombre_pais)
+    CONSTRAINT PK_GR05_PAIS PRIMARY KEY (nombre_pais)
 );
 
 -- Table: PATROCINANTE
@@ -60,7 +60,7 @@ CREATE TABLE GR05_PATROCINANTE (
     apellido_responsable varchar(60)  NOT NULL,
     direccion varchar(200)  NULL,
     id_distrito int  NOT NULL,
-    CONSTRAINT PK_PATROCINANTE PRIMARY KEY (id_patrocinate)
+    CONSTRAINT PK_GR05_PATROCINANTE PRIMARY KEY (id_patrocinate)
 );
 
 -- Table: PATROCINIOS
@@ -69,14 +69,14 @@ CREATE TABLE GR05_PATROCINIOS (
     id_evento int  NOT NULL,
     nro_edicion int  NOT NULL,
     aporte numeric(8,2)  NOT NULL,
-    CONSTRAINT PK_PATROCINIOS PRIMARY KEY (id_patrocinate,id_evento,nro_edicion)
+    CONSTRAINT PK_GR05_PATROCINIOS PRIMARY KEY (id_patrocinate,id_evento,nro_edicion)
 );
 
 -- Table: PROVINCIA
 CREATE TABLE GR05_PROVINCIA (
     nombre_pais varchar(120)  NOT NULL,
     nombre_provincia varchar(120)  NOT NULL,
-    CONSTRAINT PK_PROVINCIA PRIMARY KEY (nombre_pais,nombre_provincia)
+    CONSTRAINT PK_GR05_PROVINCIA PRIMARY KEY (nombre_pais,nombre_provincia)
 );
 
 -- Table: SUBCATEGORIA
@@ -84,7 +84,7 @@ CREATE TABLE GR05_SUBCATEGORIA (
     id_categoria int  NOT NULL,
     id_subcategoria int  NOT NULL,
     nombre_subcategoria varchar(150)  NOT NULL,
-    CONSTRAINT PK_SUBCATEGORIA PRIMARY KEY (id_categoria,id_subcategoria)
+    CONSTRAINT PK_GR05_SUBCATEGORIA PRIMARY KEY (id_categoria,id_subcategoria)
 );
 
 -- Table: USUARIO
@@ -94,7 +94,7 @@ CREATE TABLE GR05_USUARIO (
     apellido varchar(40)  NOT NULL,
     e_mail varchar(320)  NOT NULL,
     password varchar(32)  NOT NULL,
-    CONSTRAINT PK_USUARIO PRIMARY KEY (id_usuario)
+    CONSTRAINT PK_GR05_USUARIO PRIMARY KEY (id_usuario)
 );
 
 -- foreign keys
