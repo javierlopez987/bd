@@ -7,3 +7,20 @@ ALTER TABLE gr05_evento_edicion
 ADD CONSTRAINT ck_inicio_fin_publicacion
 CHECK ( ( fecha_fin_pub IS NOT NULL AND fecha_fin_pub > fecha_inicio_pub )
 	OR fecha_fin_pub IS NULL);
+
+--VISTAS
+--1) Identificador de los Eventos cuya fecha de realización de su último encuentro
+--esté en el primer trimestre de 2020
+CREATE VIEW eventos_trim1_2020
+AS SELECT id_evento, nro_edicion
+FROM gr05_evento_edicion
+WHERE fecha_edicion BETWEEN to_date('01/01/2020', 'DD/MM/YYYY') AND to_date('31/03/2020', 'DD/MM/YYYY')
+WITH CASCADED CHECK OPTION;
+
+--2) Datos completos de los distritos indicando la cantidad de eventos en cada uno
+CREATE VIEW cant_eventos_distrito AS
+    SELECT nombre_distrito, nombre_provincia, nombre_pais, count(*) AS cant_eventos
+    FROM gr05_evento e
+    JOIN gr05_distrito d ON (e.id_distrito = d.id_distrito)
+    GROUP BY nombre_distrito, nombre_provincia, nombre_pais;
+
