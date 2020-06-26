@@ -1,5 +1,3 @@
-SET search_path = unc_249695;
-
 --a)Se debe consistir que la fecha de inicio de la publicación de la edición
 --sea anterior a la fecha de fin de la publicación del mismo si esta última no es nula.
 --Restricción de tupla

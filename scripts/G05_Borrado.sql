@@ -1,5 +1,3 @@
-SET search_path = unc_249695;
-
 DROP TABLE IF EXISTS gr05_patrocinios CASCADE;
 DROP TABLE IF EXISTS gr05_patrocinante CASCADE;
 DROP TABLE IF EXISTS gr05_evento_edicion CASCADE;

@@ -1,5 +1,3 @@
-SET search_path = unc_249695;
-
 -- Created by Vertabelo (http://vertabelo.com)
 -- Last modification date: 2020-06-12 16:30:46.933
 
