@@ -1,5 +1,5 @@
 <?php
-require_once 'app\users\UserHelper.php';
+require_once 'app\core\UserHelper.php';
 
 abstract class Controller {
     protected $model;
