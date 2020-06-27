@@ -5,8 +5,7 @@ class UserModel {
     private $db;
 
     function __construct() {
-        $this->db = Database::getInstance()->getConnection();
-        $this->query = new QuerySQL();
+        // $this->db = Database::getInstance()->getConnection();
         $this->tabla = "usuario";
     }
 

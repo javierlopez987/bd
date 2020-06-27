@@ -18,7 +18,7 @@ $router = new Router();
 
 // ruta evento
 $router->addRoute("evento", "POST", "EventoController", "create");
-$router->addRoute("evento", "GET", "EventoController", "displayForm");
+$router->addRoute("evento", "GET", "EventoController", "displayFormAlta");
 $router->addRoute("evento/:ID", "GET", "EventoController", "displayEvento");
 
 $router->addRoute("user/login", "GET", "UserController", "login");

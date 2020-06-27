@@ -5,8 +5,7 @@ class EventoModel {
     private $db;
 
     public function __construct () {
-        $this->db = Database::getInstance()->getConnection();
-        $this->query = new QuerySQL();
+        // $this->db = Database::getInstance()->getConnection();
         $this->tabla = "evento";
     }
 
