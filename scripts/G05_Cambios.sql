@@ -9,18 +9,18 @@ CHECK ( ( fecha_fin_pub IS NOT NULL AND fecha_fin_pub > fecha_inicio_pub )
 --VISTAS
 --1) Identificador de los Eventos cuya fecha de realización de su último encuentro
 --esté en el primer trimestre de 2020
-CREATE VIEW eventos_trim1_2020
-AS SELECT id_evento, nro_edicion
-FROM gr05_evento_edicion
-WHERE fecha_edicion BETWEEN to_date('01/01/2020', 'DD/MM/YYYY') AND to_date('31/03/2020', 'DD/MM/YYYY')
-WITH CASCADED CHECK OPTION;
+CREATE VIEW v_eventos_trim_1_2020 AS
+	SELECT id_evento
+	FROM gr05_evento_edicion
+	WHERE fecha_edicion BETWEEN to_date('01/01/2020', 'DD/MM/YYYY') AND to_date('31/03/2020', 'DD/MM/YYYY');
 
 --2) Datos completos de los distritos indicando la cantidad de eventos en cada uno
+--En SQL Standard
 CREATE VIEW cant_eventos_distrito AS
-    SELECT nombre_distrito, nombre_provincia, nombre_pais, count(*) AS cant_eventos
-    FROM gr05_evento e
-    JOIN gr05_distrito d ON (e.id_distrito = d.id_distrito)
-    GROUP BY nombre_distrito, nombre_provincia, nombre_pais;
+    SELECT d.*, count(*) AS cant_eventos
+    FROM gr05_distrito d
+        JOIN gr05_evento e ON (e.id_distrito = d.id_distrito)
+    GROUP BY d.id_distrito;
 
 --3)Datos Categorías que poseen eventos en todas sus subcategorías
 CREATE VIEW categoria_all_subcategorias_con_eventos AS
@@ -36,4 +36,5 @@ WHERE NOT EXISTS(
             WHERE (s.id_categoria = e.id_categoria
                 AND s.id_subcategoria = e.id_subcategoria)
         )
-    );
+    )
+WITH LOCAL CHECK OPTION ;

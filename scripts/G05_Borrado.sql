@@ -8,3 +8,6 @@ DROP TABLE IF EXISTS gr05_pais CASCADE;
 DROP TABLE IF EXISTS gr05_usuario CASCADE;
 DROP TABLE IF EXISTS gr05_subcategoria CASCADE;
 DROP TABLE IF EXISTS gr05_categoria CASCADE;
+DROP FUNCTION IF EXISTS fn_control_aportes_exceden_presupuesto_insert() CASCADE;
+DROP FUNCTION IF EXISTS fn_control_aportes_exceden_presupuesto_update() CASCADE;
+DROP FUNCTION IF EXISTS fn_control_presupuesto_update() CASCADE;
