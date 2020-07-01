@@ -29,7 +29,7 @@ INSERT INTO gr05_subcategoria VALUES (1, 4, 'Triatlón');
 INSERT INTO gr05_subcategoria VALUES (2, 5, 'Ski');
 
 --Tabla EVENTO
-INSERT INTO gr05_evento VALUES (1, 'Aventura Las Ánimas', 'Trekking de aventura por el Cerro Las Ánimas y alrededores', 1, 1, 1, 1, 21,9,true);
+INSERT INTO gr05_evento VALUES (1, 'Aventura Las Ánimas', 'Trekking de aventura por el Cerro Las Ánimas y alrededores', 1, 1, 1, 1, 21,1,true);
 INSERT INTO gr05_evento VALUES (2, 'Hombre de Hierro', 'Carrera de triatlón en el Lago del Fuerte y alrededores', 1, 4, 1, 1, 20,11,true);
 INSERT INTO gr05_evento VALUES (3, 'Ski Syncro', 'Competencia de ski sincronizado en el Cerro Catedral', 2, 5, 1, 3, 10,8,true);
 UPDATE gr05_evento SET mes_evento = 3 WHERE id_evento = 1;
@@ -41,13 +41,12 @@ INSERT INTO gr05_patrocinante VALUES (4, 'Naka Outdoors', 'Ramiro', 'Nakarato', 
 INSERT INTO gr05_patrocinante VALUES (5, 'Head Argentina', 'Esteban', 'Headache', NULL, 4);
 
 --Tabla EVENTO_EDICION
-INSERT INTO gr05_evento_edicion VALUES (1, 1, to_date('21/06/2020','DD/MM/YYYY'), NULL, 60000.00, NULL);
-INSERT INTO gr05_evento_edicion VALUES (3, 1, to_date('01/07/2020','DD/MM/YYYY'), NULL, 200000.00, NULL);
-UPDATE gr05_evento_edicion SET fecha_inicio_pub = '01/01/2020', fecha_edicion = to_date('21/03/2020','DD/MM/YYYY')  WHERE id_evento = 1 AND nro_edicion = 1;
+INSERT INTO gr05_evento_edicion VALUES (1, 1, to_date('21/01/2020','DD/MM/YYYY'), NULL, 60000.00, NULL);
+INSERT INTO gr05_evento_edicion VALUES (3, 1, to_date('18/08/2020','DD/MM/YYYY'), NULL, 200000.00, NULL);
+
 --Tabla PATROCINIOS
 INSERT INTO gr05_patrocinios VALUES (2,1,1,2000.00);
 INSERT INTO gr05_patrocinios VALUES (3,3,1,80000.00);
 INSERT INTO gr05_patrocinios VALUES (4,3,1,20000.00);
-INSERT INTO gr05_patrocinios VALUES (1,3,1,80000.00);
-INSERT INTO gr05_patrocinios VALUES (5,3,1,60000.00);
 INSERT INTO gr05_patrocinios VALUES (1,1,1,58000.00);
+

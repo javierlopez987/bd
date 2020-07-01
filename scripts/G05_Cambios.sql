@@ -51,49 +51,124 @@ ON gr05_subcategoria
 
 ------------------------------  C   ------------------------------------
 
-CREATE OR REPLACE FUNCTION FN_GR05_PATROCINIOS_APORTE_EXCEDE_PRESUPUESTO() RETURNS Trigger AS $$
+--ASSERTION
+--c) La suma de los aportes que recibe una edición de un evento de sus patrocinantes
+--no puede superar el presupuesto establecido para la misma.
+
+/*
+CREATE ASSERTION ASS_APORTES_EXCEDEN_PRESUPUESTO
+CHECK NOT EXISTS (
+	SELECT 1
+	FROM gr05_patrocinios p
+	JOIN gr05_evento_edicion e
+		ON (p.id_evento = e.id_evento AND p.nro_edicion = e.nro_edicion)
+	GROUP BY p.id_evento, p.nro_edicion, e.presupuesto
+	HAVING sum(p.aporte) > e.presupuesto
+	);
+*/
+
+--TABLA patrocinios
+--INSERT si
+--UPDATE aporte
+--DELETE no
+
+--TABLA evento_edicion
+--INSERT no
+--UPDATE presupuesto
+--DELETE no
+
+CREATE OR REPLACE FUNCTION FN_CONTROL_APORTES_EXCEDEN_PRESUPUESTO_UPDATE()
+RETURNS Trigger AS $$
 DECLARE
-    suma        integer;
+	presupuesto integer;
+    total_aportes integer;
 BEGIN
-   SELECT sum(aporte) INTO suma
-   FROM gr05_patrocinios p
-   WHERE ((p.id_evento = NEW.id_evento) and (p.nro_edicion = NEW.nro_edicion));
-   IF ((SELECT presupuesto
-		FROM gr05_evento_edicion e
-		WHERE((e.id_evento = p.id_evento) and (e.nro_edicion = p.nro_edicion))) < (suma + NEW.aporte)) THEN
-      RAISE EXCEPTION 'El nuevo aporte supero el presupuesto';
-   END IF;
-RETURN NEW;
+	SELECT e.presupuesto INTO presupuesto
+	FROM gr05_evento_edicion e
+	WHERE e.id_evento = NEW.id_evento
+		AND e.nro_edicion = NEW.nro_edicion;
+
+	SELECT SUM(aporte) INTO total_aportes
+    FROM gr05_patrocinios p
+    WHERE p.id_evento = NEW.id_evento
+        AND p.nro_edicion = NEW.nro_edicion
+    GROUP BY p.id_evento, p.nro_edicion;
+
+	total_aportes = total_aportes + NEW.aporte - OLD.aporte;
+
+	IF	((total_aportes) > presupuesto) THEN
+	RAISE EXCEPTION 'Superó el máximo permitido de % pesos. Aportes pretendidos % pesos.', presupuesto, total_aportes;
+	END IF;
+	RETURN NEW;
 END $$
 LANGUAGE 'plpgsql';
 
-CREATE TRIGGER TR_GR05_PATROCINIOS_APORTE_EXCEDE_PRESUPUESTO
-BEFORE INSERT OR UPDATE OF aporte
-ON gr05_patrocinios
-FOR EACH ROW EXECUTE PROCEDURE FN_GR05_PATROCINIOS_APORTE_EXCEDE_PRESUPUESTO();
-
----- en EVENTO_EDICION
-
-CREATE OR REPLACE FUNCTION FN_GR05_EVENTO_EDICION_PRESUPUESTO_INFERIOR_AL_APORTE() RETURNS Trigger AS $$
+CREATE OR REPLACE FUNCTION FN_CONTROL_APORTES_EXCEDEN_PRESUPUESTO_INSERT()
+RETURNS Trigger AS $$
 DECLARE
-	total integer;
+	presupuesto integer;
+    total_aportes integer;
 BEGIN
-   SELECT new.presupuesto into total
-   FROM gr05_evento_edicion e
-   WHERE e.id_evento = NEW.id_evento;
-   IF ((SELECT sum(aporte)
-		FROM gr05_patrocinios p
-		WHERE p.id_evento = e.id_evento) > total) THEN
-      RAISE EXCEPTION 'El nuevo presupueto esta por debajo del aporte';
-   END IF;
-RETURN NEW;
+	SELECT e.presupuesto INTO presupuesto
+	FROM gr05_evento_edicion e
+	WHERE e.id_evento = NEW.id_evento
+		AND e.nro_edicion = NEW.nro_edicion;
+
+	SELECT SUM(aporte) INTO total_aportes
+    FROM gr05_patrocinios p
+    WHERE p.id_evento = NEW.id_evento
+        AND p.nro_edicion = NEW.nro_edicion
+    GROUP BY p.id_evento, p.nro_edicion;
+
+	total_aportes = total_aportes + NEW.aporte;
+
+	IF	((total_aportes) > presupuesto) THEN
+	RAISE EXCEPTION 'Superó el máximo permitido de % pesos. Aportes pretendidos % pesos. Puede aportar % pesos.', presupuesto, total_aportes, NEW.aporte-(total_aportes-presupuesto);
+	END IF;
+	RETURN NEW;
 END $$
 LANGUAGE 'plpgsql';
 
-CREATE TRIGGER TR_GR05_EVENTO_EDICION_PRESUPUESTO_INFERIOR_AL_APORTE
-BEFORE UPDATE OF presupuesto
-ON gr05_evento_edicion
-FOR EACH ROW EXECUTE PROCEDURE FN_GR05_EVENTO_EDICION_PRESUPUESTO_INFERIOR_AL_APORTE();
+CREATE OR REPLACE FUNCTION FN_CONTROL_PRESUPUESTO_UPDATE()
+RETURNS Trigger AS $$
+DECLARE
+	presupuesto integer;
+    total_aportes integer;
+BEGIN
+	SELECT SUM(aporte) INTO total_aportes
+    FROM gr05_patrocinios p
+    WHERE p.id_evento = NEW.id_evento
+        AND p.nro_edicion = NEW.nro_edicion
+    GROUP BY p.id_evento, p.nro_edicion;
+
+	presupuesto = NEW.presupuesto;
+
+	IF	((total_aportes) > presupuesto) THEN
+	RAISE EXCEPTION 'Los aportes ya recibidos de % pesos superan el monto de % pesos que intenta ingresar.', total_aportes, presupuesto;
+	END IF;
+	RETURN NEW;
+END $$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER TR_CONTROL_APORTES_PATROCINANTES_UPDATE
+	BEFORE UPDATE OF aporte
+	ON gr05_patrocinios
+	FOR EACH ROW
+	WHEN (NEW.aporte > OLD.aporte)
+	EXECUTE PROCEDURE FN_CONTROL_APORTES_EXCEDEN_PRESUPUESTO_UPDATE();
+
+CREATE TRIGGER TR_CONTROL_APORTES_PATROCINANTES_INSERT
+	BEFORE INSERT
+	ON gr05_patrocinios
+	FOR EACH ROW
+	EXECUTE PROCEDURE FN_CONTROL_APORTES_EXCEDEN_PRESUPUESTO_INSERT();
+
+CREATE TRIGGER TR_CONTROL_PRESUPUESTO_EDICION
+	BEFORE UPDATE OF presupuesto
+	ON gr05_evento_edicion
+	FOR EACH ROW
+	WHEN (NEW.presupuesto < OLD.presupuesto)
+	EXECUTE PROCEDURE FN_CONTROL_PRESUPUESTO_UPDATE();
 
 ------------------------   D   -----------------------------------------------
 -- Función utilizada por Trigger tr_gr05_patrocinios_distrito
@@ -176,17 +251,21 @@ EXECUTE PROCEDURE fn_gr05_evento_distrito();
 CREATE OR REPLACE FUNCTION fn_gr05_edicion_evento_nueva_edicion() RETURNS TRIGGER AS $$
 DECLARE
 	mes integer;
-	nro_anterior gr05_evento_edicion.nro_edicion%type;
-	fecha_anterior gr05_evento_edicion.fecha_edicion%type;
+    dia integer;
 	presup_anterior gr05_evento_edicion.presupuesto%type;
 BEGIN
     SELECT mes_evento INTO mes
     FROM gr05_evento e
     WHERE e.id_evento = NEW.id_evento;
 
+    SELECT dia_evento INTO dia
+    FROM gr05_evento e
+    WHERE e.id_evento = NEW.id_evento;
+
     SELECT presupuesto INTO presup_anterior
     FROM gr05_evento_edicion ed
     WHERE ed.id_evento = NEW.id_evento
+        AND (ed.fecha_edicion < NEW.fecha_edicion)
     ORDER BY fecha_edicion DESC
     LIMIT 1;
 
@@ -195,21 +274,23 @@ BEGIN
 	    FROM gr05_evento e
 	    WHERE e.id_evento = NEW.id_evento)
 	THEN
-		IF EXISTS (
-		    SELECT 1
+		IF (
+		    (SELECT count(*)
             FROM gr05_evento_edicion ed
-            WHERE ed.id_evento = NEW.id_evento)
+            WHERE ed.id_evento = NEW.id_evento) > 1)
         THEN
 			UPDATE gr05_evento_edicion ed
 			SET
 				fecha_inicio_pub = to_date('01/'||mes||'/'||extract(year from current_timestamp), 'DD/MM/YYYY'),
-				presupuesto = presup_anterior * (1 + 0.1)
+				presupuesto = presup_anterior * (1 + 0.1),
+			    fecha_edicion = to_date(dia||'/'||mes||'/'||extract(year from current_timestamp), 'DD/MM/YYYY')
 		    WHERE (ed.id_evento = NEW.id_evento AND ed.nro_edicion = NEW.nro_edicion);
 		ELSE
 		    UPDATE gr05_evento_edicion ed
 			SET
 				fecha_inicio_pub = to_date('01/'||mes||'/'||extract(year from current_timestamp), 'DD/MM/YYYY'),
-				presupuesto = 100000
+				presupuesto = 100000,
+			    fecha_edicion = to_date(dia||'/'||mes||'/'||extract(year from current_timestamp), 'DD/MM/YYYY')
 		    WHERE (ed.id_evento = NEW.id_evento AND ed.nro_edicion = NEW.nro_edicion);
         END IF;
 	END IF;

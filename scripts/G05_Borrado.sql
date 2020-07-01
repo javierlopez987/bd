@@ -18,3 +18,6 @@ DROP FUNCTION IF EXISTS fn_gr05_subcategoria_maxima_cantidad() CASCADE;
 DROP FUNCTION IF EXISTS fn_gr05_patrocinios_distrito() CASCADE;
 DROP FUNCTION IF EXISTS fn_gr05_evento_distrito() CASCADE;
 DROP FUNCTION IF EXISTS fn_gr05_patrocinante_distrito() CASCADE;
+DROP FUNCTION IF EXISTS fn_control_presupuesto_update() CASCADE;
+DROP FUNCTION IF EXISTS fn_control_aportes_exceden_presupuesto_update() CASCADE;
+DROP FUNCTION IF EXISTS fn_control_aportes_exceden_presupuesto_insert() CASCADE;
