@@ -33,21 +33,21 @@ INSERT INTO gr05_evento VALUES (1, 'Aventura Las Ánimas', 'Trekking de aventura
 INSERT INTO gr05_evento VALUES (2, 'Hombre de Hierro', 'Carrera de triatlón en el Lago del Fuerte y alrededores', 1, 4, 1, 1, 20,11,true);
 INSERT INTO gr05_evento VALUES (3, 'Ski Syncro', 'Competencia de ski sincronizado en el Cerro Catedral', 2, 5, 1, 3, 10,8,true);
 UPDATE gr05_evento SET mes_evento = 3 WHERE id_evento = 1;
+--Tabla PATROCINANTE
+INSERT INTO gr05_patrocinante VALUES (2, 'Centro de Montaña Tandil', 'Juliana', 'Gómez', 'Pje El Centinela S/N', 1);
+INSERT INTO gr05_patrocinante VALUES (1, 'Ansilta', 'Juan', 'Pérez', 'Necochea 2085', 2);
+INSERT INTO gr05_patrocinante VALUES (3, 'Northface', 'Pedro', 'González', 'Av. Santa Fe 3253', 4);
+INSERT INTO gr05_patrocinante VALUES (4, 'Naka Outdoors', 'Ramiro', 'Nakarato', 'Ramallo 2307', 4);
+INSERT INTO gr05_patrocinante VALUES (5, 'Head Argentina', 'Esteban', 'Headache', NULL, 4);
 
 --Tabla EVENTO_EDICION
 INSERT INTO gr05_evento_edicion VALUES (1, 1, to_date('21/06/2020','DD/MM/YYYY'), NULL, 60000.00, NULL);
 INSERT INTO gr05_evento_edicion VALUES (3, 1, to_date('01/07/2020','DD/MM/YYYY'), NULL, 200000.00, NULL);
 UPDATE gr05_evento_edicion SET fecha_inicio_pub = '01/01/2020', fecha_edicion = to_date('21/03/2020','DD/MM/YYYY')  WHERE id_evento = 1 AND nro_edicion = 1;
---Tabla PATROCINANTE
-INSERT INTO gr05_patrocinante VALUES (1, 'Ansilta', 'Juan', 'Pérez', 'Necochea 2085', 2);
-INSERT INTO gr05_patrocinante VALUES (2, 'Centro de Montaña Tandil', 'Juliana', 'Gómez', 'Pje El Centinela S/N', 1);
-INSERT INTO gr05_patrocinante VALUES (3, 'Northface', 'Pedro', 'González', 'Av. Santa Fe 3253', 4);
-INSERT INTO gr05_patrocinante VALUES (4, 'Naka Outdoors', 'Ramiro', 'Nakarato', 'Ramallo 2307', 4);
-INSERT INTO gr05_patrocinante VALUES (5, 'Head Argentina', 'Esteban', 'Headache', NULL, 4);
 --Tabla PATROCINIOS
-INSERT INTO gr05_patrocinios VALUES (1,1,1,58000.00);
 INSERT INTO gr05_patrocinios VALUES (2,1,1,2000.00);
 INSERT INTO gr05_patrocinios VALUES (3,3,1,80000.00);
 INSERT INTO gr05_patrocinios VALUES (4,3,1,20000.00);
 INSERT INTO gr05_patrocinios VALUES (1,3,1,80000.00);
 INSERT INTO gr05_patrocinios VALUES (5,3,1,60000.00);
+INSERT INTO gr05_patrocinios VALUES (1,1,1,58000.00);

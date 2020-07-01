@@ -173,62 +173,53 @@ EXECUTE PROCEDURE fn_gr05_evento_distrito();
 
 ---------------------------------- SERVICIO DE CREACION DE EVENTO_EDICION   -----------------------------
 
-CREATE OR REPLACE FUNCTION FN_GR05_EDICION_EVENTO_NUEVA_EDICION() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION fn_gr05_edicion_evento_nueva_edicion() RETURNS TRIGGER AS $$
 DECLARE
 	mes integer;
 	nro_anterior gr05_evento_edicion.nro_edicion%type;
 	fecha_anterior gr05_evento_edicion.fecha_edicion%type;
 	presup_anterior gr05_evento_edicion.presupuesto%type;
 BEGIN
-	SELECT mes_evento AS mes
-	FROM gr05_evento e
-	WHERE e.id_evento = NEW.id_evento;
-	IF (EXISTS mes) THEN
-		SELECT nro_edicion AS nro_anterior,
-			extract(year from fecha_edicion) AS fecha_anterior,
-			presupuesto AS presup_anterior
-		FROM gr05_evento_edicion ed
-		WHERE ed.id_evento = NEW.id_evento
-		ORDER BY fecha_edicion DESC;
-		LIMIT 1;
-		IF (EXISTS nro_anterior) THEN
-			INSERT INTO gr05_evento_edicion(
-				id_evento,
-				nro_edicion,
-				fecha_inicio_pub,
-				fecha_fin_pub,
-				presupuesto,
-				fecha_edicion)
-				VALUES (
-					NEW.id_evento,
-					NEW.nro_edicion,
-					to_date('01/'||mes||'/'||extract(year from current_timestamp), 'DD/MM/YYYY'),
-					NEW.fecha_fin_pub,
-					presup_anterior * (1 + 0.1),
-					NEW.fecha_edicion)
+    SELECT mes_evento INTO mes
+    FROM gr05_evento e
+    WHERE e.id_evento = NEW.id_evento;
+
+    SELECT presupuesto INTO presup_anterior
+    FROM gr05_evento_edicion ed
+    WHERE ed.id_evento = NEW.id_evento
+    ORDER BY fecha_edicion DESC
+    LIMIT 1;
+
+	IF EXISTS (
+	    SELECT 1
+	    FROM gr05_evento e
+	    WHERE e.id_evento = NEW.id_evento)
+	THEN
+		IF EXISTS (
+		    SELECT 1
+            FROM gr05_evento_edicion ed
+            WHERE ed.id_evento = NEW.id_evento)
+        THEN
+			UPDATE gr05_evento_edicion ed
+			SET
+				fecha_inicio_pub = to_date('01/'||mes||'/'||extract(year from current_timestamp), 'DD/MM/YYYY'),
+				presupuesto = presup_anterior * (1 + 0.1)
+		    WHERE (ed.id_evento = NEW.id_evento AND ed.nro_edicion = NEW.nro_edicion);
 		ELSE
-			INSERT INTO gr05_evento_edicion(
-				id_evento,
-				nro_edicion,
-				fecha_inicio_pub,
-				fecha_fin_pub,
-				presupuesto,
-				fecha_edicion)
-				VALUES (
-					NEW.id_evento,
-					NEW.nro_edicion,
-					to_date('01/'||mes||'/'||extract(year from current_timestamp), 'DD/MM/YYYY'),
-					NEW.fecha_fin_pub,
-					100000,
-					NEW.fecha_edicion);
+		    UPDATE gr05_evento_edicion ed
+			SET
+				fecha_inicio_pub = to_date('01/'||mes||'/'||extract(year from current_timestamp), 'DD/MM/YYYY'),
+				presupuesto = 100000
+		    WHERE (ed.id_evento = NEW.id_evento AND ed.nro_edicion = NEW.nro_edicion);
+        END IF;
 	END IF;
 RETURN NEW;
 END $$ LANGUAGE 'plpgsql';
 
 CREATE TRIGGER TR_GR05_EDICION_EVENTO_NUEVA_EDICION
-INSTEAD OF INSERT
+AFTER INSERT
 ON gr05_evento_edicion
-FOR EACH ROW EXECUTE PROCEDURE FN_GR05_EDICION_EVENTO_NUEVA_EDICION();
+FOR EACH ROW EXECUTE PROCEDURE fn_gr05_edicion_evento_nueva_edicion();
 
 -------------------------------  VISTAS  -------------------------------
 
